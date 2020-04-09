@@ -1,4 +1,3 @@
-import { pathOr } from 'ramda/es';
 
 const STORAGE_NAME_TEAMS = 'teams';
 
@@ -7,9 +6,9 @@ const baseLocalStorage = {
 }
 
 const initializeLocalStorage = localStorage.setItem(STORAGE_NAME_TEAMS, JSON.stringify(baseLocalStorage));
-const getLocalStorage = () => localStorage.getItem(STORAGE_NAME_TEAMS);
+const getLocalStorage = () => JSON.parse(localStorage.getItem(STORAGE_NAME_TEAMS));
 
-const getLocalStorageFavorites = () => pathOr([])(['favorites'])(getLocalStorage());
+const getLocalStorageFavorites = () => getLocalStorage().favorites;
 const setLocalStorageFavorites = (newFavoritesList) => localStorage.setItem(STORAGE_NAME_TEAMS, JSON.stringify({ favorites: newFavoritesList }));
 
 export {

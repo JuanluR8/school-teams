@@ -1,15 +1,26 @@
 <script>
-import { compose, isEmpty, not, equals } from "ramda/es";
-import { getFirstTeamLogo, getTeamColors } from "../helpers/teamHelper";
+import { compose, isEmpty, not, equals } from 'ramda/es';
+import {
+  getFirstTeamLogo,
+  getTeamColors,
+  isFavorite,
+  getTeamComment,
+} from '../helpers/teamHelper';
+import FavoriteToggle from '../components/UI/FavoriteToggle.vue';
 
 export default {
+  name: 'TeamCard',
   data() {
     return {
-      imgSrc: null
+      imgSrc: null,
     };
   },
   props: {
-    team: Object
+    team: Object,
+    favoritesList: Array,
+  },
+  components: {
+    FavoriteToggle,
   },
   computed: {
     isFavoritesView() {
@@ -20,19 +31,31 @@ export default {
     },
     teamHasColors() {
       return compose(not, isEmpty)(this.teamColors);
-    }
+    },
+    teamIsFavorite() {
+      return isFavorite(this.team.id)(this.favoritesList);
+    },
+    teamComment() {
+      return getTeamComment(this.team.id)(this.favoritesList);
+    },
   },
   methods: {
     setNotFoundLogo() {
-      this.imgSrc = "../assets/not-found.png";
+      this.imgSrc = '../assets/not-found.png';
     },
     goToTeamDetails() {
       this.$router.push({ name: 'team-details', params: this.team });
-    }
+    },
+    toggleFavorite() {
+      this.$emit(this.teamIsFavorite ? 'remove' : 'add');
+    },
+    removeFromFavorites() {
+      this.$emit('remove');
+    },
   },
   mounted() {
     this.imgSrc = getFirstTeamLogo(this.team);
-  }
+  },
 };
 </script>
 
@@ -42,7 +65,7 @@ export default {
       <img
         class="team-card-logo"
         :src="imgSrc"
-        @error="(() => imgSrc = null)"
+        @error="() => (imgSrc = null)"
       />
     </span>
     <span v-else>
@@ -64,10 +87,26 @@ export default {
           </span>
           <span v-else>Team has't assigned colors</span>
         </div>
+        <div class="left-footer-favorites" v-else>
+          <p>{{ teamComment }}</p>
+        </div>
       </div>
       <div class="right">
-        <t-button variant="primary" size="sm" @click="goToTeamDetails">View details</t-button>
-        <span class="favorite-icon">Estrellita</span>
+        <t-button
+          class="view-details-button"
+          variant="primary"
+          size="sm"
+          @click="goToTeamDetails"
+          >View details</t-button
+        >
+        <FavoriteToggle
+          v-if="!isFavoritesView"
+          :value="teamIsFavorite"
+          @click="toggleFavorite"
+        />
+        <t-button size="sm" variant="danger" v-else @click="removeFromFavorites"
+          >Remove</t-button
+        >
       </div>
     </div>
   </div>
@@ -83,6 +122,7 @@ export default {
 
   &-logo {
     width: 60px;
+    margin: 0 20px;
   }
 
   &-info {
@@ -113,6 +153,16 @@ export default {
           margin: 0 5px;
           border: 1px solid #000;
         }
+      }
+    }
+    .right {
+      display: flex;
+      align-items: center;
+      .view-details-button {
+        margin: 0 20px;
+      }
+      .favorite-toggle {
+        width: 20px;
       }
     }
   }

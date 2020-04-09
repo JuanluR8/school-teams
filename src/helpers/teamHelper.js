@@ -1,9 +1,10 @@
-import { head, pathOr, compose, pipe, append, prop, filter, identity, props, join, ifElse, isEmpty, always as K } from "ramda/es";
+import { head, pathOr, compose, pipe, append, prop, filter, identity, props, join, ifElse, isEmpty, always as K, pluck, includes } from "ramda/es";
+import { findById } from "./listHelper";
 
 const getFirstTeamLogo = compose(head, pathOr([])(["logos"]));
 const getTeamColors = (team) => pipe(
-  append(prop("color")(team)),
-  append(prop("alt_color")(team)),
+  append(prop('color')(team)),
+  append(prop('alt_color')(team)),
   filter(identity)
 )([]);
 
@@ -14,8 +15,23 @@ const getTeamAlternativeNames = pipe(
   ifElse(isEmpty, K('--'), identity)
 );
 
+const isFavorite = (id) => pipe(
+  pluck('id'),
+  includes(id)
+);
+
+const quote = string => `"${string}"`;
+
+const getTeamComment = teamId => pipe(
+  findById(teamId),
+  prop('comment'),
+  ifElse(isEmpty)(K('No comments saved for this team'))(quote)
+);
+
 export {
   getFirstTeamLogo,
   getTeamColors,
   getTeamAlternativeNames,
+  isFavorite,
+  getTeamComment
 }

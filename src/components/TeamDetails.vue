@@ -3,14 +3,15 @@ import {
   getFirstTeamLogo,
   getTeamColors,
   getTeamAlternativeNames,
-} from "../helpers/teamHelper";
+} from '../helpers/teamHelper';
 
 import { pathOr } from 'ramda/es';
 export default {
+  name: 'TeamDetails',
   data() {
     return {
       teamInfo: null,
-      imgSrc: null
+      imgSrc: null,
     };
   },
   computed: {
@@ -19,34 +20,38 @@ export default {
     },
     alternativeTeamNames() {
       return getTeamAlternativeNames(this.teamInfo);
-    }
+    },
   },
   methods: {
     setNotFoundLogo() {
-      this.imgSrc = "../assets/not-found.png";
+      this.imgSrc = '../assets/not-found.png';
     },
     goBackToList() {
       this.$router.go(-1);
     },
     getTeamProp(prop) {
       return pathOr('--')([prop])(this.teamInfo);
-    }
+    },
   },
   mounted() {
     this.teamInfo = this.$route.params;
     this.imgSrc = getFirstTeamLogo(this.teamInfo);
-  }
+  },
 };
 </script>
 
 <template>
   <div class="team-details">
-    <t-button @click="goBackToList">Back</t-button>
+    <t-button size="sm" @click="goBackToList">Back</t-button>
     <div class="team-details-card t-card bg-white rounded border">
       <div class="card-info-left">
         <h1 class="team-details-card-name">{{ getTeamProp('school') }}</h1>
         <div v-if="imgSrc">
-          <img class="team-details-card-logo" :src="imgSrc" @error="(() => imgSrc = null)" />
+          <img
+            class="team-details-card-logo"
+            :src="imgSrc"
+            @error="() => (imgSrc = null)"
+          />
         </div>
         <div v-else>
           <img class="team-details-card-logo" src="../assets/not-found.png" />
@@ -81,6 +86,7 @@ export default {
     box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 2fr;
+    padding: 20px;
 
     .card-info-left {
       display: flex;
