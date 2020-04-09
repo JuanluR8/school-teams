@@ -21,10 +21,11 @@ const isFavorite = (id) => pipe(
 );
 
 const quote = string => `"${string}"`;
+const getComment = pathOr('')(['comment'])
 
 const getTeamComment = teamId => pipe(
   findById(teamId),
-  prop('comment'),
+  getComment,
   ifElse(isEmpty)(K('No comments saved for this team'))(quote)
 );
 

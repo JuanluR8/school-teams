@@ -7,16 +7,9 @@ import 'tailwindcss/dist/base.css';
 import 'tailwindcss/dist/components.css';
 import 'tailwindcss/dist/utilities.css';
 
-import { getLocalStorage, initializeLocalStorage } from './helpers/localStorage';
-import { isEmpty } from 'ramda/es';
-
 Vue.config.productionTip = false;
 
 Vue.use(VueTailwind)
-
-if (isEmpty(getLocalStorage)) {
-  initializeLocalStorage();
-}
 
 new Vue({
   router,
